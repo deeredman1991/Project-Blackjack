@@ -2,51 +2,7 @@ import random
 import time
 import json
 
-#Init Roulette Table
-table = [
-    'green',
-    'red', 'black', 'red',
-    'black', 'red', 'black',
-    'red', 'black', 'red',
-    'black', 'black', 'red',
-    'black', 'red', 'black',
-    'red', 'black', 'red',
-    'red', 'black', 'red',
-    'black', 'red', 'black',
-    'red', 'black', 'red',
-    'black', 'black', 'red',
-    'black', 'red', 'black',
-    'red', 'black', 'red',
-    'green' #00
-    ]
-
-while True:
-    try:
-        with open('Options.json', 'r') as outfile:
-            jsonData = json.load(outfile)
-            money = jsonData["Starting Money"]
-            minBet = jsonData["Minimum Bet"]
-            maxBet = jsonData["Maximum Bet"]
-            americanTable = jsonData["American Table"]
-            break
-    except IOError:
-        print("Generating Options.json.")
-        encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True}, indent=4)
-        with open('Options.json', 'w') as outfile:
-            outfile.write(encoded_data + '\n')
-            
-highestBalance = money
-maxRoll = 38 if americanTable else 37
-
-games = 0
-
-redBet = 0
-blackBet = 0
-evenBet = 0
-oddBet = 0
-lowBet = 0
-highBet = 0
-
+#Define Betting Functions
 def betRed(bet):
     global redBet, money
     redBet = redBet + bet
@@ -77,23 +33,86 @@ def betHigh(bet):
     highBet = highBet + bet
     money = money - bet
 
-#Init Bet
+#Create Roulette Table
+table = [
+    'green',
+    'red', 'black', 'red',
+    'black', 'red', 'black',
+    'red', 'black', 'red',
+    'black', 'black', 'red',
+    'black', 'red', 'black',
+    'red', 'black', 'red',
+    'red', 'black', 'red',
+    'black', 'red', 'black',
+    'red', 'black', 'red',
+    'black', 'black', 'red',
+    'black', 'red', 'black',
+    'red', 'black', 'red',
+    'green' #00
+    ]
+    
+#Declare global game variables
+games = 0
+redBet = 0
+blackBet = 0
+evenBet = 0
+oddBet = 0
+lowBet = 0
+highBet = 0
+money = 0
+minBet = 0
+maxBet = 0
+maxRoll = 0
+replay = True
+    
+def initGame():
+    global games, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, replay, highestBalance, maxRoll
+    
+    games = 0
+    
+    redBet = 0
+    blackBet = 0
+    evenBet = 0
+    oddBet = 0
+    lowBet = 0
+    highBet = 0
+    
+    while True:
+        try:
+            with open('Options.json', 'r') as outfile:
+                jsonData = json.load(outfile)
+                money = jsonData["Starting Money"]
+                minBet = jsonData["Minimum Bet"]
+                maxBet = jsonData["Maximum Bet"]
+                americanTable = jsonData["American Table"]
+                replay = jsonData["Replay"]
+                break
+        except IOError:
+            print("Generating Options.json.")
+            encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True, "Replay": True}, indent=4)
+            with open('Options.json', 'w') as outfile:
+                outfile.write(encoded_data + '\n')
+                
+    highestBalance = money
+    maxRoll = 38 if americanTable else 37
 
-betRed(minBet)
-betBlack(minBet*2)
-betOdd(minBet)
-betEven(minBet*2)
-betLow(minBet)
-betHigh(minBet*2)
-
-print "~Initial Bet~"
-print "$" + str(redBet) + " On Red."
-print "$" + str(blackBet) + " On Black."
-print "$" + str(oddBet) + " On Odd."
-print "$" + str(evenBet) + " On Even."
-print "$" + str(lowBet) + " On Low."
-print "$" + str(highBet) + " On High."
-print "$" + str(money) + " in our pocket."
+    betRed(minBet)
+    betBlack(minBet*2)
+    betOdd(minBet)
+    betEven(minBet*2)
+    betLow(minBet)
+    betHigh(minBet*2)
+    
+    print "~Initial Bet~"
+    print "$" + str(redBet) + " On Red."
+    print "$" + str(blackBet) + " On Black."
+    print "$" + str(oddBet) + " On Odd."
+    print "$" + str(evenBet) + " On Even."
+    print "$" + str(lowBet) + " On Low."
+    print "$" + str(highBet) + " On High."
+    print "$" + str(money) + " in our pocket."
+    
+initGame()
 
 #Main Loop
 while True:
@@ -234,5 +253,8 @@ while True:
         print "Games Played " + str(games)
         print "$" + str(highestBalance) + " was your biggest pocket."
         raw_input("")
-        break
+        if replay:
+            initGame()
+        else:
+            break
     #time.sleep(10)
