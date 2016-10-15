@@ -52,7 +52,7 @@ table = [
     ]
     
 #Declare global game variables
-games = 0
+gamesPlayed = 0
 redBet = 0
 blackBet = 0
 evenBet = 0
@@ -64,11 +64,12 @@ minBet = 0
 maxBet = 0
 maxRoll = 0
 replay = True
-    
+
+#Define general init function
 def initGame():
-    global games, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
+    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
     
-    games = 0
+    gamesPlayed = 0
     
     redBet = 0
     blackBet = 0
@@ -77,31 +78,39 @@ def initGame():
     lowBet = 0
     highBet = 0
     
+    #Generate and/or load Options.json
     while True:
         try:
             with open('Options.json', 'r') as outfile:
                 jsonData = json.load(outfile)
+                #Get money, minimum bet, maximum bet, and table type from Options.json.
                 money = jsonData["Starting Money"]
                 minBet = jsonData["Minimum Bet"]
                 maxBet = jsonData["Maximum Bet"]
                 americanTable = jsonData["American Table"]
                 break
         except IOError:
+            #If Options.json doesn't exist, create one with default values and try again.
             print("Generating Options.json.")
             encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True}, indent=4)
             with open('Options.json', 'w') as outfile:
                 outfile.write(encoded_data + '\n')
                 
+    #Reset highest balance
     highestBalance = money
+    #Set wheel/table type to either American or European.
     maxRoll = 38 if americanTable else 37
-
+    
+    #Initialize bets
     betRed(minBet)
     betBlack(minBet*2)
     betOdd(minBet)
     betEven(minBet*2)
     betLow(minBet)
     betHigh(minBet*2)
+    betHigh(minBet*2)
     
+    #Output initial bets
     print "~Initial Bet~"
     print "$" + str(redBet) + " On Red."
     print "$" + str(blackBet) + " On Black."
@@ -111,19 +120,24 @@ def initGame():
     print "$" + str(highBet) + " On High."
     print "$" + str(money) + " in our pocket."
     
+#First Init
 initGame()
 
 #Main Loop
 while True:
-    games += 1
     
+    #Scorekeeping
+    gamesPlayed += 1
     if money > highestBalance:
         highestBalance = money
         
     #Ball
     roll = random.randrange(0, maxRoll)
     
+    #--------------------
     #Handle Red and Black
+    #--------------------
+    #Roll is Red
     if table[roll] == 'red':
         money += redBet*2
         redBet = 0
@@ -134,6 +148,7 @@ while True:
         else:
             blackBet = blackBet*2
             money -= blackBet
+    #Roll is Black
     elif table[roll] == 'black':
         money += blackBet*2
         blackBet = 0
@@ -144,7 +159,8 @@ while True:
         else:
             redBet = redBet*2
             money -= redBet
-    else: #Roll is Green
+    #Roll is Green
+    else:
         if redBet*2 > maxBet:
             redBet = minBet*2
             money -= minBet*2
@@ -159,7 +175,9 @@ while True:
             blackBet = blackBet*2
             money -= blackBet
             
+    #--------------------
     #Handle Odd and Even
+    #--------------------
     if roll != 0 and roll != 37:
         #Roll is Even
         if roll % 2 == 0:
@@ -172,7 +190,6 @@ while True:
             else:
                 oddBet = oddBet*2
                 money -= oddBet
-                
         #Roll is Odd
         else:
             money += oddBet*2
@@ -184,8 +201,8 @@ while True:
             else:
                 evenBet = evenBet*2
                 money -= evenBet
-                
-    else: #Roll is green
+    #Roll is Green
+    else:
         if evenBet*2 > maxBet:
             evenBet = minBet*2
             money -= minBet*2
@@ -200,7 +217,10 @@ while True:
             oddBet = oddBet*2
             money -= oddBet
             
-    #Handle low and high
+    #--------------------
+    #Handle Low and High
+    #--------------------
+    #Roll is Low
     if roll >= 1 and roll <= 18:
         money += lowBet*2
         lowBet = 0
@@ -212,6 +232,7 @@ while True:
         else:
             highBet = highBet*2
             money -= highBet		
+    #Roll is High
     elif roll >= 19 and roll <= 36:
         money += highBet*2
         highBet = 0
@@ -222,7 +243,8 @@ while True:
         else:
             lowBet = lowBet*2
             money -= lowBet
-    else: #Roll is green
+    #Roll is Green
+    else:
         if lowBet*2 > maxBet:
             lowBet = minBet*2
             money -= minBet*2
@@ -237,6 +259,7 @@ while True:
             highBet = highBet*2
             money -= highBet
             
+    #Output Log
     print "Ball Landed on {} {}. ".format( str(roll) if roll != 37 else '00' ,table[roll] )
     print ""
     print "$" + str(redBet) + " On Red."
@@ -247,9 +270,10 @@ while True:
     print "$" + str(highBet) + " On High."
     print "$" + str(money) + " in our pocket."
     
-    #raw_input("")
+    #Stop Condition
     if money <= 0:
-        print "Games Played " + str(games)
+        print ""
+        print "Games Played " + str(gamesPlayed)
         print "$" + str(highestBalance) + " was your biggest pocket."
         input = raw_input("Type 'quit' to end program. Press 'return'(enter) to play again. : ")
         if "q" in input.lower():

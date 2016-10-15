@@ -95,7 +95,7 @@ table = [
     ]
     
 #Declare global game variables
-games = 0
+gamesPlayed = 0
 redBet = 0
 blackBet = 0
 evenBet = 0
@@ -109,9 +109,9 @@ maxRoll = 0
 
 #Define general init function
 def initGame():
-    global games, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
+    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
     
-    games = 0
+    gamesPlayed = 0
     
     redBet = 0
     blackBet = 0
@@ -120,24 +120,30 @@ def initGame():
     lowBet = 0
     highBet = 0
     
+    #Generate and/or load Options.json
     while True:
         try:
             with open('Options.json', 'r') as outfile:
                 jsonData = json.load(outfile)
+                #Get money, minimum bet, maximum bet, and table type from Options.json.
                 money = jsonData["Starting Money"]
                 minBet = jsonData["Minimum Bet"]
                 maxBet = jsonData["Maximum Bet"]
                 americanTable = jsonData["American Table"]
                 break
         except IOError:
+            #If Options.json doesn't exist, create one with default values and try again.
             print("Generating Options.json.")
             encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True}, indent=4)
             with open('Options.json', 'w') as outfile:
                 outfile.write(encoded_data + '\n')
                 
+    #Reset highest balance
     highestBalance = money
+    #Set wheel/table type to either American or European.
     maxRoll = 38 if americanTable else 37
-
+    
+    #Initialize bets
     betRed(minBet)
     betBlack(minBet*2)
     betOdd(minBet)
@@ -145,6 +151,7 @@ def initGame():
     betLow(minBet)
     betHigh(minBet*2)
     
+    #Output initial bets
     Print ("~Initial Bet~" )
     Print( "$" + str(redBet) + " On Red." )
     Print( "$" + str(blackBet) + " On Black." )
@@ -154,16 +161,22 @@ def initGame():
     Print( "$" + str(highBet) + " On High." )
     Print( "$" + str(money) + " in our pocket." )
     
+#First Init
 initGame()
 
 #Main Loop
 while True:
     
-    #Scorekeeping
-    games += 1
+####################
+###SCORE KEEPING####
+####################
+    gamesPlayed += 1
     if money > highestBalance:
         highestBalance = money
         
+####################
+###BETTING LOGIC####
+####################
     #Ball
     roll = random.randrange(0, maxRoll)
     
@@ -292,8 +305,12 @@ while True:
             highBet = highBet*2
             money -= highBet
             
-    #Output Log
-    #Roll
+####################
+#######OUTPUT#######
+####################
+    #--------------------
+    #-----Full Roll------
+    #--------------------
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "Ball ", end="" )
     
@@ -330,7 +347,9 @@ while True:
     
     Print("")
     
-    #Red and Black.
+    #--------------------
+    #---Red and Black----
+    #--------------------
     #Red
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "${number:.<{padding}} on ".format( number = redBet, padding = len(str(highestBalance)) ), end="" )
@@ -347,7 +366,9 @@ while True:
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( ".")
     
-    #Odd and Even.
+    #--------------------
+    #----Odd and Even----
+    #--------------------
     #Odd
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "${number:.<{padding}} on ".format( number = oddBet, padding = len(str(highestBalance)) ), end="" )
@@ -364,7 +385,9 @@ while True:
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( ".")
     
-    #Low and High.
+    #--------------------
+    #----Low and High----
+    #--------------------
     #Low
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "${number:.<{padding}} on ".format( number = lowBet, padding = len(str(highestBalance)) ), end="" )
@@ -381,7 +404,9 @@ while True:
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( ".")
     
-    #Pocket
+    #--------------------
+    #-------Pocket-------
+    #--------------------
     if money > 0:
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_GREEN)
     else:
@@ -390,13 +415,15 @@ while True:
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( " in our pocket.")
     
-    #Stop Condition
+####################
+###STOP CONDITION###
+####################
     if money <= 0:
         Print( "" )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
         Print( "Games Played: ", end="" )
         setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
-        Print( games )
+        Print( gamesPlayed )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_GREEN)
         Print( "$" + str(highestBalance), end="" )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
@@ -407,5 +434,4 @@ while True:
         else:
             Print( "" )
             initGame()
-        
     #time.sleep(10)
