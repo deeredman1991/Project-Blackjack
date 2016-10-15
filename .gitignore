@@ -1,0 +1,6 @@
+*.pypirc
+*.bat
+*.pyc
+*.json
+
+test.py
