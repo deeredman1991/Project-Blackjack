@@ -66,7 +66,7 @@ maxRoll = 0
 replay = True
     
 def initGame():
-    global games, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, replay, highestBalance, maxRoll
+    global games, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
     
     games = 0
     
@@ -85,11 +85,10 @@ def initGame():
                 minBet = jsonData["Minimum Bet"]
                 maxBet = jsonData["Maximum Bet"]
                 americanTable = jsonData["American Table"]
-                replay = jsonData["Replay"]
                 break
         except IOError:
             print("Generating Options.json.")
-            encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True, "Replay": True}, indent=4)
+            encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True}, indent=4)
             with open('Options.json', 'w') as outfile:
                 outfile.write(encoded_data + '\n')
                 
@@ -252,9 +251,9 @@ while True:
     if money <= 0:
         print "Games Played " + str(games)
         print "$" + str(highestBalance) + " was your biggest pocket."
-        raw_input("")
-        if replay:
-            initGame()
-        else:
+        input = raw_input("Type 'quit' to end program. Press 'return'(enter) to play again. : ")
+        if "q" in input.lower():
             break
+        else:
+            initGame()
     #time.sleep(10)
