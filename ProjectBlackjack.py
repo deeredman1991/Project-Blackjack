@@ -319,6 +319,7 @@ while True:
     Print( "Red", end="" )
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( ".")
+    
     #Black
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "${number:.<{padding}} on ".format( number = blackBet, padding = len(str(highestBalance)) ), end="" )
@@ -362,12 +363,25 @@ while True:
     Print( ".")
     
     #Pocket
-    Print( "$" + str(money) + " in our pocket." )
+    if money > 0:
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_GREEN)
+    else:
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_RED)
+    Print( "$" + str(money), end="" )
+    setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
+    Print( " in our pocket.")
     
     #Stop Condition
     if money <= 0:
-        Print( "Games Played: " + str(games) )
-        Print( "$" + str(highestBalance) + " was your biggest pocket." )
+        Print( "" )
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
+        Print( "Games Played: ", end="" )
+        setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
+        Print( games )
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_GREEN)
+        Print( "$" + str(highestBalance), end="" )
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
+        Print( " was your biggest pocket." )
         raw_input("")
         break
     #time.sleep(10)
