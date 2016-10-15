@@ -75,11 +75,11 @@ money = 0
 minBet = 0
 maxBet = 0
 maxRoll = 0
-replay = True
+bestGame = 0
 
 #Define general init function
 def initGame():
-    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
+    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll, bestGame
     
     gamesPlayed = 0
     
@@ -89,6 +89,7 @@ def initGame():
     oddBet = 0
     lowBet = 0
     highBet = 0
+    bestGame = 1
     
     #Generate and/or load Options.json
     while True:
@@ -141,6 +142,7 @@ while True:
     #Scorekeeping
     gamesPlayed += 1
     if money > highestBalance:
+        bestGame = gamesPlayed
         highestBalance = money
         
     #Ball
@@ -274,6 +276,7 @@ while True:
     #Output Log
     Print( "Ball Landed on {} {}. ".format( str(roll) if roll != 37 else '00' ,table[roll] ) )
     Print( "" )
+    Print( "Game Numer: " + str(gamesPlayed) )
     Print( "$" + str(redBet) + " On Red." )
     Print( "$" + str(blackBet) + " On Black." )
     Print( "$" + str(oddBet) + " On Odd." )
@@ -285,7 +288,8 @@ while True:
     #Stop Condition
     if money <= 0:
         Print( "" )
-        Print( "Games Played " + str(gamesPlayed) )
+        Print( "Total Games Played " + str(gamesPlayed) )
+        Print( "Best Game: {}".format( bestGame-1 if bestGame > 1 else bestGame ) )
         Print( "$" + str(highestBalance) + " was your biggest pocket." )
         
         with open("log.txt", 'w') as outfile:

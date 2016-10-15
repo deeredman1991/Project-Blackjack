@@ -112,10 +112,11 @@ money = 0
 minBet = 0
 maxBet = 0
 maxRoll = 0
+bestGame = 0
 
 #Define general init function
 def initGame():
-    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll
+    global gamesPlayed, redBet, blackBet, evenBet, oddBet, lowBet, highBet, money, minBet, maxBet, highestBalance, maxRoll, bestGame
     
     gamesPlayed = 0
     
@@ -125,6 +126,7 @@ def initGame():
     oddBet = 0
     lowBet = 0
     highBet = 0
+    bestGame = 1
     
     #Generate and/or load Options.json
     while True:
@@ -178,6 +180,7 @@ while True:
 ####################
     gamesPlayed += 1
     if money > highestBalance:
+        bestGame = gamesPlayed
         highestBalance = money
         
 ####################
@@ -316,7 +319,7 @@ while True:
 ####################
     #--------------------
     #-----Full Roll------
-    #--------------------
+    #--------------------    
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( "Ball ", end="" )
     
@@ -352,6 +355,12 @@ while True:
     Print( ".")
     
     Print("")
+    
+    #Game Number
+    setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
+    Print( "Game Numer: ", end="" )
+    setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
+    Print( gamesPlayed )
     
     #--------------------
     #---Red and Black----
@@ -420,16 +429,20 @@ while True:
     Print( "$" + str(money), end="" )
     setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
     Print( " in our pocket.")
-    
+
 ####################
 ###STOP CONDITION###
 ####################
     if money <= 0:
         Print( "" )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
-        Print( "Games Played: ", end="" )
+        Print( "Total Games Played: ", end="" )
         setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
         Print( gamesPlayed )
+        setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
+        Print( "Best Game: ", end="" )
+        setTextColor(DEFAULT_BACKGROUND+DEFAULT_FOREGROUND)
+        Print( bestGame-1 if bestGame > 1 else bestGame )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_LIGHT+FOREGROUND_GREEN)
         Print( "$" + str(highestBalance), end="" )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
