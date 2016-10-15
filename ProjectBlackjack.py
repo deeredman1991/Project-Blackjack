@@ -4,6 +4,9 @@ import json
 from ctypes import windll
 import sys
 
+#Text Log
+log = ''
+
 #Console Attributes
 FOREGROUND_BLACK     = 0x0000
 FOREGROUND_BLUE      = 0x0001
@@ -36,7 +39,10 @@ def setTextColor(*args):
     SetConsoleTextAttribute(stdout_handle, color)
     
 def Print(msg, end='\n'):
-    sys.stdout.write('{}{}'.format(msg, end))
+    global log
+    msg = '{}{}'.format(msg, end)
+    log += msg
+    sys.stdout.write(msg)
     sys.stdout.flush()
 
 #Init Default Console Colors
@@ -428,6 +434,10 @@ while True:
         Print( "$" + str(highestBalance), end="" )
         setTextColor(DEFAULT_BACKGROUND+FOREGROUND_CYAN)
         Print( " was your biggest pocket." )
+        
+        with open("log.txt", 'w') as outfile:
+            outfile.write(log)
+        
         input = raw_input("Type 'quit' to end program. Press 'return'(enter) to play again. : ")
         if "q" in input.lower():
             break

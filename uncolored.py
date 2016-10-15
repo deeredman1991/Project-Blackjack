@@ -1,6 +1,18 @@
 import random
 import time
 import json
+import sys
+
+#Text Log
+log = ''
+
+#Custom Print function
+def Print(msg, end='\n'):
+    global log
+    msg = '{}{}'.format(msg, end)
+    log += msg
+    sys.stdout.write(msg)
+    sys.stdout.flush()
 
 #Define Betting Functions
 def betRed(bet):
@@ -91,7 +103,7 @@ def initGame():
                 break
         except IOError:
             #If Options.json doesn't exist, create one with default values and try again.
-            print("Generating Options.json.")
+            Print("Generating Options.json.")
             encoded_data = json.dumps({"Starting Money": 500, "Minimum Bet": 1, "Maximum Bet": 50, "American Table": True}, indent=4)
             with open('Options.json', 'w') as outfile:
                 outfile.write(encoded_data + '\n')
@@ -111,14 +123,14 @@ def initGame():
     betHigh(minBet*2)
     
     #Output initial bets
-    print "~Initial Bet~"
-    print "$" + str(redBet) + " On Red."
-    print "$" + str(blackBet) + " On Black."
-    print "$" + str(oddBet) + " On Odd."
-    print "$" + str(evenBet) + " On Even."
-    print "$" + str(lowBet) + " On Low."
-    print "$" + str(highBet) + " On High."
-    print "$" + str(money) + " in our pocket."
+    Print( "~Initial Bet~" )
+    Print( "$" + str(redBet) + " On Red." )
+    Print( "$" + str(blackBet) + " On Black." )
+    Print( "$" + str(oddBet) + " On Odd." )
+    Print( "$" + str(evenBet) + " On Even." )
+    Print( "$" + str(lowBet) + " On Low." )
+    Print( "$" + str(highBet) + " On High." )
+    Print( "$" + str(money) + " in our pocket." )
     
 #First Init
 initGame()
@@ -260,21 +272,25 @@ while True:
             money -= highBet
             
     #Output Log
-    print "Ball Landed on {} {}. ".format( str(roll) if roll != 37 else '00' ,table[roll] )
-    print ""
-    print "$" + str(redBet) + " On Red."
-    print "$" + str(blackBet) + " On Black."
-    print "$" + str(oddBet) + " On Odd."
-    print "$" + str(evenBet) + " On Even."
-    print "$" + str(lowBet) + " On Low."
-    print "$" + str(highBet) + " On High."
-    print "$" + str(money) + " in our pocket."
+    Print( "Ball Landed on {} {}. ".format( str(roll) if roll != 37 else '00' ,table[roll] ) )
+    Print( "" )
+    Print( "$" + str(redBet) + " On Red." )
+    Print( "$" + str(blackBet) + " On Black." )
+    Print( "$" + str(oddBet) + " On Odd." )
+    Print( "$" + str(evenBet) + " On Even." )
+    Print( "$" + str(lowBet) + " On Low." )
+    Print( "$" + str(highBet) + " On High." )
+    Print( "$" + str(money) + " in our pocket." )
     
     #Stop Condition
     if money <= 0:
-        print ""
-        print "Games Played " + str(gamesPlayed)
-        print "$" + str(highestBalance) + " was your biggest pocket."
+        Print( "" )
+        Print( "Games Played " + str(gamesPlayed) )
+        Print( "$" + str(highestBalance) + " was your biggest pocket." )
+        
+        with open("log.txt", 'w') as outfile:
+            outfile.write(log)
+        
         input = raw_input("Type 'quit' to end program. Press 'return'(enter) to play again. : ")
         if "q" in input.lower():
             break
